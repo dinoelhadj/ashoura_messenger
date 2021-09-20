@@ -65,9 +65,19 @@ public class ConversationsRVAdapter extends RecyclerView.Adapter<ConversationsRV
 
     @Override
     public void onBindViewHolder(ConversationsRVAdapter.ViewHolder viewHolder, final int position) {
+        String name = conversations.get(position).getName();
+        if (name.length()>15){
+            name = name.substring(0,13) + "..";
+        }
+        viewHolder.SenderTV.setText(name);
 
-        viewHolder.SenderTV.setText(conversations.get(position).getName());
-        viewHolder.lastMsgTv.setText(conversations.get(position).getLastMessage());
+        String lastmsg = conversations.get(position).getLastMessage();
+        if (lastmsg.length()>20){
+            lastmsg = lastmsg.substring(0,20) + "...";
+        }
+        viewHolder.lastMsgTv.setText(lastmsg);
+
+        Log.e("Name",name);
 
         int hour = (int) ((conversations.get(position).timestamp / 1000) % 86400) / 3600;
         int minute = (int) (((conversations.get(position).timestamp / 1000) % 86400) % 3600) / 60;
@@ -106,28 +116,7 @@ public class ConversationsRVAdapter extends RecyclerView.Adapter<ConversationsRV
                     FirebaseDatabase database = FirebaseDatabase.getInstance();
                     DatabaseReference myRef = database
                             .getReference("Users");
-                    // Read from the database
-                    /*myRef.addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            // This method is called once with the initial value and again
-                            // whenever data at this location is updated.
-                            String value = dataSnapshot.child(mAuth.getCurrentUser().getUid())
-                                    .child(conversations.get(position).senderID)
-                                    .child("seen").getValue(String.class);
-                            Log.e("ds key",dataSnapshot.getKey());
-                            Log.e("ds current user id",mAuth.getCurrentUser().getUid());
-                            Log.e
-                            Log.e("isSeen",value);
-                        }
 
-                        @Override
-                        public void onCancelled(DatabaseError error) {
-                            // Failed to read value
-                            Log.w(TAG, "Failed to read value.", error.toException());
-                        }
-                    });
-                    */
 
                     myRef.child(mAuth.getCurrentUser().getUid())
                             .child("conversations")

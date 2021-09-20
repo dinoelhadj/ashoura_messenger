@@ -20,6 +20,7 @@ import java.util.TimeZone;
 
 public class MainActivity extends AppCompatActivity {
     FrameLayout fragmentContainer;
+    public String myName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

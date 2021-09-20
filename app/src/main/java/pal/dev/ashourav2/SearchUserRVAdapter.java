@@ -2,6 +2,7 @@ package pal.dev.ashourav2;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -28,11 +29,13 @@ public class SearchUserRVAdapter extends RecyclerView.Adapter<SearchUserRVAdapte
 
     private static ArrayList<SearchUserModel> searchusers;
     private LayoutInflater mInflater;
+    Context context;
 
 
     public SearchUserRVAdapter(Context context, ArrayList<SearchUserModel> searchusers ){
         this.mInflater = LayoutInflater.from(context);
         this.searchusers = searchusers;
+        this.context = context;
         Log.e("Constructor, searchusers count:", "" + searchusers.size());
     }
 
@@ -57,6 +60,26 @@ public class SearchUserRVAdapter extends RecyclerView.Adapter<SearchUserRVAdapte
     @Override
     public SearchUserRVAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = mInflater.inflate(R.layout.searchuser, parent, false);
+        DatabaseReference getName = FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getUid());
+        getName.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String myName = snapshot.child("name").getValue().toString();
+                try {
+                    SharedPreferences sharedPref = context.getSharedPreferences("myName", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPref.edit();
+                    editor.putString("myName", myName);
+                    editor.apply();
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
         return new SearchUserRVAdapter.ViewHolder(view);
     }
 
@@ -83,7 +106,7 @@ public class SearchUserRVAdapter extends RecyclerView.Adapter<SearchUserRVAdapte
                                 bool = true;
                             }
                         } catch (Exception e) {
-                            //gge
+                            //ignore
                         }
                         if (bool){
                             try {
@@ -134,8 +157,7 @@ public class SearchUserRVAdapter extends RecyclerView.Adapter<SearchUserRVAdapte
 
 
                         } else {
-
-                            // TODO create an empty conversation
+                            //Creating an empty conversation
                             DatabaseReference cnvRef = FirebaseDatabase.getInstance().getReference("conversations").push();
                             Log.e("push",cnvRef.getKey());
                             cnvRef.child("ConversationInitializer").setValue("0");
@@ -145,21 +167,7 @@ public class SearchUserRVAdapter extends RecyclerView.Adapter<SearchUserRVAdapte
                             userRef.child("seen").setValue(false);
                             userRef.child("timestamp").setValue("1000000000000");
 
-                            // get my name
-                            final String[] myName = {"Name"};
-                            DatabaseReference myNameRef = FirebaseDatabase.getInstance().getReference("Users")
-                                    .child(FirebaseAuth.getInstance().getUid());
-                            myNameRef.child("name").addValueEventListener(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                    myName[0] = snapshot.getValue().toString();
-                                }
 
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError error) {
-
-                                }
-                            });
 
                             //adding conversation to other user conversations
                             DatabaseReference otherusrref = FirebaseDatabase.getInstance().getReference("Users")
@@ -167,10 +175,12 @@ public class SearchUserRVAdapter extends RecyclerView.Adapter<SearchUserRVAdapte
                                     .child("conversations")
                                     .child(FirebaseAuth.getInstance().getUid());
                             otherusrref.child("conversationID").setValue(cnvRef.getKey());
-                            otherusrref.child("Name").setValue(myName[0]);
-                            userRef.child("last_message").setValue("1stNullMsg");
-                            userRef.child("seen").setValue(false);
-                            userRef.child("timestamp").setValue("1000000000000");
+                            SharedPreferences sharedPref = context.getSharedPreferences("myName", Context.MODE_PRIVATE);
+                            String myName =  sharedPref.getString("myName", "myName");
+                            otherusrref.child("Name").setValue(myName);
+                            otherusrref.child("last_message").setValue("1stNullMsg");
+                            otherusrref.child("seen").setValue(false);
+                            otherusrref.child("timestamp").setValue("1000000000000");
 
 
                         }

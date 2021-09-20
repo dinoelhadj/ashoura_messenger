@@ -113,10 +113,10 @@ public class ChatFragment extends Fragment {
         getStatusRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Log.e("chatter Status", ""+ snapshot.getValue());
+                Log.e("chatter Status", ""+ snapshot.getValue().toString());
                 String status = "Offline";
                 try {
-                    Long last_seen = Long.parseLong(""+snapshot.getValue());
+                    Long last_seen = Long.parseLong(""+snapshot.getValue().toString());
                     Long diffrence = System.currentTimeMillis() - last_seen;
                     if (diffrence < (2 * 60000)) {
                         status = "Active now";
@@ -135,20 +135,8 @@ public class ChatFragment extends Fragment {
             }
         });
 
-        //get my name
-        DatabaseReference getNameRef = database.getReference("Users").child(mAuth.getUid());
-        getNameRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                myUserName = ""+snapshot.child("Name").getValue();
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-
+        //load messages
         DatabaseReference myRef = database.getReference("conversations").child(mConversationID);
         myRef.addValueEventListener(new ValueEventListener() {
             @RequiresApi(api = Build.VERSION_CODES.N)
@@ -158,12 +146,12 @@ public class ChatFragment extends Fragment {
                 for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
                     System.out.println("postSnapShot key: " + postSnapshot.getKey());
                     try {
-                        MessageModel message = new MessageModel(""+postSnapshot.child("sender").getValue(),
-                                Long.valueOf(""+postSnapshot.child("timestamp").getValue()),
-                                ""+postSnapshot.child("value").getValue());
-                        if (Boolean.parseBoolean(""+postSnapshot.child("seen").getValue())) {
+                        MessageModel message = new MessageModel(""+postSnapshot.child("sender").getValue().toString(),
+                                Long.valueOf(""+postSnapshot.child("timestamp").getValue().toString()),
+                                ""+postSnapshot.child("value").getValue().toString());
+                        if (Boolean.parseBoolean(""+postSnapshot.child("seen").getValue().toString())) {
                             message.setSeen(true);
-                            message.setSeenTimeStamp(Long.valueOf(""+postSnapshot.child("seenTimeStamp").getValue()));
+                            message.setSeenTimeStamp(Long.valueOf(""+postSnapshot.child("seenTimeStamp").getValue().toString()));
                         }
                         messages.add(message);
                     } catch (Exception e){
@@ -189,68 +177,81 @@ public class ChatFragment extends Fragment {
             }
         });
 
+        //General database refs to use
+        DatabaseReference myUserRef = database.getReference("Users").child(FirebaseAuth.getInstance().getUid());
+        DatabaseReference chatterRef = database.getReference("Users").child(mChatterID);
+        DatabaseReference cnvRef = database.getReference("conversations").child(mConversationID);
+        try {
+            myUserRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    myUserName = "" + snapshot.child("Name").getValue();
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+
+        } catch (Exception e) {
+            Log.e("myUser&chatter","null ");
+        }
 
         btn_send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 String currentTime = "" + System.currentTimeMillis();
-                //TODO if first message initialize cnv id
 
                 if (!et_messageChat.getText().toString().isEmpty()){
                     String messageValue = et_messageChat.getText().toString();
                     String messageID = myRef.push().getKey();
                     assert messageID != null;
                     myRef.child(messageID).child("sender").setValue(Objects.requireNonNull(mAuth.getCurrentUser()).getUid());
+                    myRef.child(messageID).child("Name").setValue(myUserName);
                     myRef.child(messageID).child("timestamp").setValue(System.currentTimeMillis());
                     myRef.child(messageID).child("value").setValue(messageValue);
                     myRef.child(messageID).child("seen").setValue(false);
                     myRef.child(messageID).child("seenTimeStamp").setValue(null);
 
 
-
-                    DatabaseReference last_msgCnv = database.getReference("Users");
-
                     //for user
-                    last_msgCnv.child(mAuth.getUid())
-                            .child("conversations")
+                    myUserRef.child("conversations")
                             .child(mChatterID)
                             .child("last_message")
                             .setValue(messageValue);
-                    last_msgCnv.child(mAuth.getUid())
-                            .child("conversations")
+                    myUserRef.child("conversations")
                             .child(mChatterID)
                             .child("seen")
                             .setValue("true");
-                    last_msgCnv.child(mAuth.getUid())
-                            .child("conversations")
+                    myUserRef.child("conversations")
                             .child(mChatterID)
                             .child("timestamp")
                             .setValue(currentTime);
+                    myUserRef.child("conversations")
+                            .child(mChatterID)
+                            .child("Name")
+                            .setValue(mChatter);
 
                     //for chatter
-                    last_msgCnv.child(mChatterID)
-                            .child("conversations")
+                    chatterRef.child("conversations")
                             .child(mAuth.getUid())
                             .child("last_message")
                             .setValue(messageValue);
-                    last_msgCnv.child(mChatterID)
-                            .child("conversations")
+                    chatterRef.child("conversations")
                             .child(mAuth.getUid())
                             .child("seen")
                             .setValue("false");
-                    last_msgCnv.child(mChatterID)
-                            .child("conversations")
+                    chatterRef.child("conversations")
                             .child(mAuth.getUid())
                             .child("timestamp")
                             .setValue(currentTime);
-                    last_msgCnv.child(mChatterID)
-                            .child("conversations")
+                    chatterRef.child("conversations")
                             .child(mAuth.getUid())
                             .child("conversationID")
                             .setValue(mConversationID);
-                    last_msgCnv.child(mChatterID)
-                            .child("conversations")
+                    chatterRef.child("conversations")
                             .child(mAuth.getUid())
                             .child("Name")
                             .setValue(myUserName);

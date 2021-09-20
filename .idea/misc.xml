@@ -7,7 +7,7 @@
         <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.21458333333333332" />
         <entry key="app/src/main/res/drawable/message_bg.xml" value="0.21458333333333332" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.1" />
-        <entry key="app/src/main/res/layout/conversation.xml" value="0.1984375" />
+        <entry key="app/src/main/res/layout/conversation.xml" value="0.33" />
         <entry key="app/src/main/res/layout/fragment_chat.xml" value="0.1598731884057971" />
         <entry key="app/src/main/res/layout/fragment_conversation.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_login.xml" value="0.1984375" />

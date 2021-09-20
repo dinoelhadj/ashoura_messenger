@@ -9,7 +9,7 @@ public class ConversationModel {
     Long timestamp;
 
     public ConversationModel(String conversationID, String senderID, String name, String lastMessage, boolean seen, Long timestamp) {
-        Name = name;
+        this.Name = name;
         this.senderID = senderID;
         this.lastMessage = lastMessage;
         this.conversationID = conversationID;
