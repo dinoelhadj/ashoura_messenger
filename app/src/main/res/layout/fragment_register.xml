@@ -21,6 +21,15 @@ tools:context=".RegisterFragment">
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <ImageView
+        android:id="@+id/imageView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@mipmap/ashoura"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView43" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -29,7 +38,7 @@ tools:context=".RegisterFragment">
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView43"
+        app:layout_constraintTop_toBottomOf="@+id/imageView3"
         app:layout_constraintVertical_bias="0.1">
 
         <TextView
@@ -41,9 +50,11 @@ tools:context=".RegisterFragment">
 
         <EditText
             android:id="@+id/etEmailAddressRegister"
-            android:layout_width="250dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
             android:layout_marginTop="20dp"
+            android:layout_marginEnd="30dp"
             android:background="@drawable/message_bg"
             android:ems="10"
             android:hint="Email"
@@ -52,7 +63,7 @@ tools:context=".RegisterFragment">
 
         <EditText
             android:id="@+id/etNameRegister"
-            android:layout_width="250dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="30dp"
             android:layout_marginTop="20dp"
@@ -66,7 +77,7 @@ tools:context=".RegisterFragment">
 
         <EditText
             android:id="@+id/etPasswordRegister"
-            android:layout_width="250dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="30dp"
             android:layout_marginTop="20dp"
@@ -84,7 +95,7 @@ tools:context=".RegisterFragment">
             android:layout_marginStart="50dp"
             android:layout_marginTop="20dp"
             android:layout_marginEnd="50dp"
-            android:backgroundTint="@color/purple_500"
+            android:backgroundTint="@color/principal"
             android:gravity="center"
             android:text="Register"
             android:textColor="#FFFFFF"

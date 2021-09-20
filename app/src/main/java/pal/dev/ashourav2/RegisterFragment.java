@@ -99,7 +99,6 @@ public class RegisterFragment extends Fragment {
                                     if (task.isSuccessful()) {
                                         Log.d(TAG, "signInWithCustomToken:success");
                                         Toast.makeText(getActivity(), "Signed in " + email, Toast.LENGTH_SHORT).show();
-                                        ((MainActivity) getActivity()).expandableBottomBar.setVisibility(View.VISIBLE);
                                         getActivity().getSupportFragmentManager().beginTransaction().
                                                 replace(R.id.fragmentContainer, new ConversationFragment(), "ConversationFragmentTag").
                                                 commit();

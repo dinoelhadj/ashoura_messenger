@@ -87,7 +87,7 @@ public class ConversationsRVAdapter extends RecyclerView.Adapter<ConversationsRV
         } else if (timeDiffrence > 3600000 && timeDiffrence < (3600000 * 1.3)){
             viewHolder.timeCnvTV.setText("1h");
         } else if (timeDiffrence > (3600000 * 1.3) && timeDiffrence < (3600000 * 1.7)){
-            viewHolder.timeCnvTV.setText("1h and half");
+            viewHolder.timeCnvTV.setText("1.5h");
         } else {
             viewHolder.timeCnvTV.setText(htime + ":" + mtime);
         }

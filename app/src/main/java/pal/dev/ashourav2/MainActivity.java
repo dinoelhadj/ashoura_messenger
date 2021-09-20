@@ -17,10 +17,8 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.TimeZone;
 
-import github.com.st235.lib_expandablebottombar.ExpandableBottomBar;
 
 public class MainActivity extends AppCompatActivity {
-    public ExpandableBottomBar expandableBottomBar;
     FrameLayout fragmentContainer;
 
     @Override
@@ -30,8 +28,6 @@ public class MainActivity extends AppCompatActivity {
 
         Log.e("TimeZone", TimeZone.getDefault().getDisplayName(false,TimeZone.SHORT));
         fragmentContainer = findViewById(R.id.fragmentContainer);
-        expandableBottomBar = findViewById(R.id.expandable_bottom_bar);
-        expandableBottomBar.setVisibility(View.GONE);
 
         getSupportFragmentManager().beginTransaction().
                 replace(R.id.fragmentContainer, new LoginFragment(), "LoginFragmentTag").

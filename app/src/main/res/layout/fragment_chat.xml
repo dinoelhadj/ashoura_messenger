@@ -71,7 +71,7 @@
             android:id="@+id/chatterImageTV"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            tools:src="@tools:sample/avatars" />
+            tools:src="@mipmap/ashoura" />
 
         <TextView
             android:id="@+id/chatterNameTV"

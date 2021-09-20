@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "747150684571",
+    "firebase_url": "https://ashoura-3e510-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "ashoura-3e510",
+    "storage_bucket": "ashoura-3e510.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:747150684571:android:6beba2f6c19f63fd48313e",
+        "android_client_info": {
+          "package_name": "pal.dev.ashourav2"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "747150684571-0vdclum8p81ojge882njmhvf28t1uca3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCqDUPXEqooWmbInGSREm1O3v8SeoVwPj0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "747150684571-0vdclum8p81ojge882njmhvf28t1uca3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

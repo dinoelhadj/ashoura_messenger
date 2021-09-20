@@ -93,7 +93,6 @@ public class ChatFragment extends Fragment {
         Log.e("mChatter",mChatter);
         Log.e("mChatterID",mChatterID);
 
-        ((MainActivity) getActivity()).expandableBottomBar.setVisibility(View.GONE);
         chatterNameTV = view.findViewById(R.id.chatterNameTV);
         chatterStatusTV = view.findViewById(R.id.chatterStatusTV);
         chatterNameTV.setText(mChatter);
@@ -268,12 +267,10 @@ public class ChatFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        ((MainActivity) getActivity()).expandableBottomBar.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        ((MainActivity) getActivity()).expandableBottomBar.setVisibility(View.GONE);
     }
 }

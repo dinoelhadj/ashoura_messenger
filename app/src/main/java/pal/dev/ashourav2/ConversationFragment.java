@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -36,6 +37,7 @@ public class ConversationFragment extends Fragment {
     RecyclerView conversations_recyclerView;
     ArrayList<ConversationModel> conversations;
     EditText et_searchCnv;
+    ImageView iv_hello;
 
 
     public ConversationFragment() {
@@ -60,6 +62,7 @@ public class ConversationFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_conversation, container, false);
 
         et_searchCnv = v.findViewById(R.id.et_searchCnv);
+        iv_hello = v.findViewById(R.id.iv_hello);
         conversations_recyclerView = v.findViewById(R.id.conversations_recyclerView);
         conversations_recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         conversations = new ArrayList<>();
@@ -73,22 +76,32 @@ public class ConversationFragment extends Fragment {
                 Log.e("conversations Count: " ,""+dataSnapshot.getChildrenCount());
                 Log.e("datasnapshot key: ","" + dataSnapshot.getKey());
                 conversations.clear();
+                conversations_recyclerView.setAdapter(null);
                 for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
-                    System.out.println("postSnapShot key: " + postSnapshot.getKey());
-                    ConversationModel conversation = new ConversationModel(""+postSnapshot.child("conversationID").getValue(),
-                            ""+postSnapshot.getKey(),
-                            ""+postSnapshot.child("Name").getValue(),
-                            ""+postSnapshot.child("last_message").getValue(),
-                            Boolean.parseBoolean(""+postSnapshot.child("seen").getValue()),
-                            Long.valueOf(""+postSnapshot.child("timestamp").getValue()));
+                    boolean bool = false;
+                    try {
+                        bool = !postSnapshot.child("last_message").getValue().toString().equals("1stNullMsg");
+                    } catch (Exception e){
+                        //
+                    }
+                    if (bool) {
+                        System.out.println("postSnapShot key: " + postSnapshot.getKey());
+                        ConversationModel conversation = new ConversationModel("" + postSnapshot.child("conversationID").getValue(),
+                                "" + postSnapshot.getKey(),
+                                "" + postSnapshot.child("Name").getValue(),
+                                "" + postSnapshot.child("last_message").getValue(),
+                                Boolean.parseBoolean("" + postSnapshot.child("seen").getValue()),
+                                Long.valueOf("" + postSnapshot.child("timestamp").getValue()));
 
-                    Log.e("cnv id", conversation.getConversationID());
-                    Log.e("cnv sender id","" + conversation.getSenderID());
-                    Log.e("cnv sender", conversation.getName());
-                    Log.e("cnv last_msg","" + conversation.getLastMessage());
-                    Log.e("cnv seen", ""+conversation.isSeen());
-                    Log.e("cnv time","" + conversation.getTimestamp());
-                    conversations.add(conversation);
+                        Log.e("cnv id", conversation.getConversationID());
+                        Log.e("cnv sender id", "" + conversation.getSenderID());
+                        Log.e("cnv sender", conversation.getName());
+                        Log.e("cnv last_msg", "" + conversation.getLastMessage());
+                        Log.e("cnv seen", "" + conversation.isSeen());
+                        Log.e("cnv time", "" + conversation.getTimestamp());
+
+                        conversations.add(conversation);
+                    }
 
                 }
 
@@ -99,6 +112,11 @@ public class ConversationFragment extends Fragment {
                 conversations.sort(Comparator.comparing(ConversationModel::getTimestamp));
                 Collections.reverse(conversations);
                 conversations_recyclerView.setAdapter(new ConversationsRVAdapter(getContext(),conversations));
+                if (conversations.size()<1){
+                    iv_hello.setVisibility(View.VISIBLE);
+                } else {
+                    iv_hello.setVisibility(View.GONE);
+                }
             }
 
             @Override
@@ -107,6 +125,7 @@ public class ConversationFragment extends Fragment {
                 Log.w(TAG, "Failed to read value.", error.toException());
             }
         });
+
 
         et_searchCnv.addTextChangedListener(new TextWatcher() {
             @Override
@@ -121,22 +140,42 @@ public class ConversationFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                editable.toString();
-                DatabaseReference SearchRef = FirebaseDatabase.getInstance().getReference("Users");
-                SearchRef.orderByChild("name").startAt(editable.toString()).limitToFirst(5).addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        Log.e("Clear","************************");
-                        for (DataSnapshot postSnapshot: snapshot.getChildren()) {
-                            Log.e("child",""+postSnapshot.child("name").getValue());
+                if (!editable.toString().isEmpty()){
+                    conversations_recyclerView.setAdapter(null);
+                    DatabaseReference SearchRef = FirebaseDatabase.getInstance().getReference("Users");
+                    SearchRef.orderByChild("name").startAt(editable.toString()).endAt(editable.toString()+"\uf8ff").limitToFirst(5).addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            Log.e("Clear","************************");
+                            Log.e("text to search",editable.toString());
+                            ArrayList<SearchUserModel> searchusers = new ArrayList<>();
+                            for (DataSnapshot postSnapshot: snapshot.getChildren()) {
+                                Log.e("child",""+postSnapshot.child("name").getValue());
+                                SearchUserModel searchUser = new SearchUserModel(postSnapshot.child("email").getValue().toString(),postSnapshot.child("name").getValue().toString(),postSnapshot.getKey());
+                                searchusers.add(searchUser);
+                                conversations_recyclerView.setAdapter(new SearchUserRVAdapter(getContext(),searchusers));
+                            }
+                            if (searchusers.size()>0){
+                                iv_hello.setVisibility(View.GONE);
+                            } else {
+                                iv_hello.setVisibility(View.VISIBLE);
+                            }
                         }
-                    }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
 
+                        }
+                    });
+                } else {
+                    conversations_recyclerView.setAdapter(new ConversationsRVAdapter(getContext(),conversations));
+                    if (conversations.size()<1){
+                        iv_hello.setVisibility(View.VISIBLE);
+                    } else {
+                        iv_hello.setVisibility(View.GONE);
                     }
-                });
+                }
+
             }
         });
 
